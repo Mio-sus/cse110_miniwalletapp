@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>CSE 110: Mini Wallet App</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            line-height: 1.6; 
+            margin: 40px auto; 
+            max-width: 800px; 
+            padding: 20px; 
+            color: #333;
+        }
+        h1, h2, h3 { color: #1a1a1a; }
+        pre { background: #f4f4f4; padding: 10px; border-radius: 5px; }
+        .mermaid { margin: 20px 0; text-align: center; }
+        ul { margin-bottom: 20px; }
+    </style>
+    <!-- Include Mermaid.js for the UML diagram -->
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        mermaid.initialize({ startOnLoad: true, theme: 'default' });
+    </script>
+</head>
+<body>
+
+    <h1>CSE 110: Mini Wallet App</h1>
+
+    <h2>1. Scenario</h2>
+    <p>A user opens the Mini Wallet application and is presented with their main <strong>Dashboard</strong>, which displays their current total balance. To log an expense, the user clicks the "Add Record" button. This action opens a popup window where they can enter the amount they spent. After entering the amount into a text field and submitting it, the system automatically subtracts this amount from the main balance. The popup window closes, and the Dashboard instantly updates to reflect the newly deducted balance, helping the user track their expenses in real-time.</p>
+
+    <h2>2. UML Class Diagram</h2>
+    <p>Below is the UML class diagram for the Mini Wallet application showing the relationships between the different Java classes:</p>
+
+    <div class="mermaid">
+classDiagram
+    class Launcher {
+        +main(args: String[]) void
+    }
+
+    class Main {
+        +main(args: String[]) void
+        +start(stage: Stage) void
+    }
+
+    class Dashboard {
+        -balanceLabel : Label
+        -balance : double
+        -button : Button
+        -button2 : Button
+        +initialize() void
+        -handleClick(event: ActionEvent) void
+        -handleClick2(event: ActionEvent) void
+        +deductBalance(amount: double) void
+        -handleAddRecord() void
+    }
+
+    class Record {
+        -amountField : TextField
+        -categoryBox : ComboBox~String~
+        -dashboardController : Dashboard
+        +setDashboardController(controller: Dashboard) void
+        +initialize() void
+        -handleAddRecord2() void
+    }
+
+    Launcher ..> Main : calls
+    Main ..> Dashboard : loads UI (the.fxml)
+    Dashboard --> Record : opens popup (add_record.fxml)
+    Record --> Dashboard : references back to update balance
+    </div>
+
+    <h2>3. Class Descriptions</h2>
+
+    <h3><strong>Launcher</strong></h3>
+    <p>A helper class containing a standard <code>main</code> method. It is used as a straightforward entry point to launch the JavaFX application, which helps bypass common module-path and classpath issues when starting JavaFX directly from the <code>Main</code> class.</p>
+
+    <h3><strong>Main</strong></h3>
+    <p>The primary entry point of the JavaFX application that extends the <code>Application</code> class. It overrides the <code>start()</code> method to initialize the user interface by loading the <code>the.fxml</code> file, setting up the main window (Stage) and Scene, and finally displaying it to the user.</p>
+
+    <h3><strong>Dashboard</strong></h3>
+    <p>The controller class for the main screen (<code>the.fxml</code>). It acts as the core of the user interface.</p>
+    <ul>
+        <li><strong>Responsibilities:</strong> It manages the state of the user's total <code>balance</code> and dynamically updates the <code>balanceLabel</code> on the screen.</li>
+        <li><strong>Key Methods:</strong> It contains <code>handleAddRecord()</code>, which is responsible for opening the new "Record" popup window, and <code>deductBalance(amount)</code>, which allows external classes to subtract values from the total balance and refresh the user interface.</li>
+    </ul>
+
+    <h3><strong>Record</strong></h3>
+    <p>The controller class for the add-record popup screen (<code>add_record.fxml</code>).</p>
+    <ul>
+        <li><strong>Responsibilities:</strong> It handles user input for new expenses. It reads the numeric value entered into the text field (<code>amountField</code>).</li>
+        <li><strong>Key Methods:</strong> It contains <code>handleAddRecord2()</code>, which validates the input and parses it into a number. Using a reference to the <code>Dashboard</code> (passed via <code>setDashboardController()</code>), it triggers the deduction on the main balance and then closes the popup window once the operation is complete.</li>
+    </ul>
+
+</body>
+</html>
